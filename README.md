@@ -1,2 +1,4 @@
-# ai2ai-linkedin-01-jpg-staging
-Temporary staging for LinkedIn 01 JPG binary materialize
+# Temporary staging (complete)
+
+LinkedIn 01 JPG was materialized and copied into `JarvisOsorio/AI2AI-B2B-Book`.
+This repository can be deleted.
