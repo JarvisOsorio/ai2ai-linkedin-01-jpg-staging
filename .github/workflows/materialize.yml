@@ -20,23 +20,22 @@ jobs:
         run: |
           set -euo pipefail
           out=linkedin-01-authority-first-commitment-gate.jpg
-          echo "Fetching..."
           curl -fsSL --retry 5 --retry-delay 2 -A 'Mozilla/5.0' \
-            https://n.uguu.se/tKDBADEg.jpg -o "$out" || {
-              echo "uguu failed, trying alternate host path"
-              curl -fsSL --retry 5 --retry-delay 2 -A 'Mozilla/5.0' \
-                https://h.uguu.se/KTrkcifQ.jpg -o "$out"
-            }
+            https://n.uguu.se/tKDBADEg.jpg -o "$out" \
+            || curl -fsSL --retry 5 --retry-delay 2 -A 'Mozilla/5.0' \
+            https://h.uguu.se/KTrkcifQ.jpg -o "$out"
           sz=$(wc -c < "$out" | tr -d ' ')
           echo "size=$sz"
           test "$sz" = "273864"
-          python3 -c '
-import sys,hashlib,os
-p=sys.argv[1]; d=open(p,"rb").read()
-assert d[:3]==b"\xff\xd8\xff", d[:3]
-assert hashlib.sha256(d).hexdigest()=="1f9f7478f837fe4385e062a4c83224e4a8239e1301e8fd5e46b42d1d53839f5d"
-print("ok", os.path.getsize(p))
-' "$out"
+          python3 <<'PY'
+          import hashlib, os
+          p = "linkedin-01-authority-first-commitment-gate.jpg"
+          d = open(p, "rb").read()
+          assert d[:3] == b"\xff\xd8\xff", d[:3]
+          expect = "1f9f7478f837fe4385e062a4c83224e4a8239e1301e8fd5e46b42d1d53839f5d"
+          assert hashlib.sha256(d).hexdigest() == expect
+          print("ok", os.path.getsize(p))
+          PY
           rm -f .github/workflows/materialize.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
